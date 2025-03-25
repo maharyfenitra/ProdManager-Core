@@ -53,7 +53,7 @@
     <p>To run the project, follow these steps:</p>
 
     <h3>1. Clone the repository</h3>
-    <pre><code>git clone https://github.com/your-repository/prodmanager.git</code></pre>
+    <pre><code>git clone https://github.com/maharyfenitra/ProdManager-Core.git</code></pre>
 
     <h3>2. Configure the database</h3>
     <p>Update <code>application.properties</code> with your PostgreSQL credentials:</p>
