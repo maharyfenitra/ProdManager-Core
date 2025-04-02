@@ -4,13 +4,13 @@ import com.prodmanager.core.category.dto.CategoryRequestDto;
 import com.prodmanager.core.category.dto.CategoryResponseDto;
 import com.prodmanager.core.category.entity.CategoryEntity;
 import com.prodmanager.core.category.repository.CategoryRepository;
+import com.prodmanager.core.exception.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 
 @Service
 public class CategoryService {
@@ -42,6 +42,39 @@ public class CategoryService {
         return modelMapper.map(categoryRepository.save(categoryEntity), CategoryResponseDto.class);
     }
 
+    public CategoryResponseDto updateCategory(Long id, CategoryRequestDto updatedCategoryRequest) {
+        // Vérifier si la catégorie existe
+        CategoryEntity existingCategory = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        // Si la catégorie n'existe pas, lancer une exception ou gérer l'erreur
+        if (existingCategory == null) {
+            throw new EntityNotFoundException("Category with id " + id + " not found.");
+        }
+
+        // Mettre à jour les champs de l'entité avec les données du DTO
+        if (updatedCategoryRequest.getName() != null) {
+            existingCategory.setName(updatedCategoryRequest.getName());
+            existingCategory.setDescription(updatedCategoryRequest.getDescription());
+        }
+
+        if (updatedCategoryRequest.getParentId() != null) {
+            Optional<CategoryEntity> parentCategoryOpt = categoryRepository.findById(updatedCategoryRequest.getParentId());
+            if (parentCategoryOpt.isPresent()) {
+                existingCategory.setParentCategory(parentCategoryOpt.get());
+            } else {
+                // Gérer le cas où le parent n'existe pas (optionnel)
+                throw new EntityNotFoundException("Parent category with id " + updatedCategoryRequest.getParentId() + " not found.");
+            }
+        }
+
+        // Enregistrer l'entité mise à jour dans la base de données
+        CategoryEntity updatedCategoryEntity = categoryRepository.save(existingCategory);
+
+        // Mapper l'entité mise à jour en DTO et le retourner
+        return modelMapper.map(updatedCategoryEntity, CategoryResponseDto.class);
+    }
+
     // Get all categories
     public List<CategoryResponseDto> getAllCategories() {
         return categoryRepository.findAll()
@@ -51,17 +84,18 @@ public class CategoryService {
     }
 
     // Get a category by ID
-    public CategoryEntity getCategoryById(Long id) {
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-    }
+    public CategoryResponseDto getCategoryById(Long id) {
 
-    // Update an existing category
-    public CategoryEntity updateCategory(Long id, CategoryEntity updatedCategory) {
-        CategoryEntity existingCategory = getCategoryById(id);
-        existingCategory.setName(updatedCategory.getName());
-        existingCategory.setParentCategory(updatedCategory.getParentCategory());
-        return categoryRepository.save(existingCategory);
+        CategoryEntity category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        CategoryResponseDto categoryResponseDto = modelMapper.map(category, CategoryResponseDto.class);
+
+        if (category.getParentCategory() != null) {
+            categoryResponseDto.setParentId(category.getParentCategory().getId());
+        }
+
+        return categoryResponseDto;
     }
 
     // Delete a category by ID
