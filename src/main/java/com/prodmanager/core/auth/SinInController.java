@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @RequestMapping("/api/auth/login")
 public class SinInController {
@@ -32,7 +31,6 @@ public class SinInController {
     @PostMapping
     public ResponseEntity<UserLoginResponseDto> login(@RequestBody UserLoginRequestDto loginDto) {
 
-        // LoginResponseDto token = authService.authenticate(loginDto.getUserName(), loginDto.getPassword());
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDto.getUserName(), loginDto.getPassword())
@@ -41,7 +39,7 @@ public class SinInController {
             UserDetails userDetails = authService.loadUserByUsername(loginDto.getUserName());
             String jwt = jwtTokenUtil.generateToken(userDetails);
             // If authentication is successful, return a response
-            // Generate and return a token if using JWT or another mechanism
+
             return ResponseEntity.ok(new UserLoginResponseDto(jwt));
         } catch (AuthenticationException e) {
             // If authentication fails, return an error response

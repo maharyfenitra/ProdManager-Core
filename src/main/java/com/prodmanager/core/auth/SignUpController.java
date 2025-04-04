@@ -29,7 +29,6 @@ public class SignUpController {
         // This is where you would typically call a service to handle the registration logic
         this.userService.registerUser(signUpDto);
 
-        // For this example, we'll assume registration is successful
         return ResponseEntity.ok("User registered successfully with username: " + signUpDto.getUserName());
     }
 }

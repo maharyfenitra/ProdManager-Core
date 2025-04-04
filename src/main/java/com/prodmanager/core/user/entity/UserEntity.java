@@ -2,8 +2,6 @@ package com.prodmanager.core.user.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")
