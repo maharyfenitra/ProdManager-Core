@@ -1,6 +1,5 @@
 package com.prodmanager.core.user.service;
 
-import com.prodmanager.core.exception.ConflictException;
 import com.prodmanager.core.exception.EntityNotFoundException;
 import com.prodmanager.core.user.dto.UserRequestDto;
 import com.prodmanager.core.user.dto.UserResponseDto;
@@ -10,11 +9,10 @@ import com.prodmanager.core.user.entity.UserEntity;
 import com.prodmanager.core.user.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -63,11 +61,11 @@ public class UserService {
     }
 
     // READ - Get all users
-    public List<UserSignupResponseDto> getAllUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(user -> modelMapper.map(user, UserSignupResponseDto.class))
-                .toList();
+    public Page<UserSignupResponseDto> getAllUsers(Pageable pageable) {
+        Page<UserEntity> users = userRepository.findAll(pageable);
+
+        return  users.map(
+                user -> modelMapper.map(user, UserSignupResponseDto.class));
     }
 
     // READ - Get user by username

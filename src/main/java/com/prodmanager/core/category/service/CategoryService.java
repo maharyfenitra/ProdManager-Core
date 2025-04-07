@@ -6,6 +6,8 @@ import com.prodmanager.core.category.entity.CategoryEntity;
 import com.prodmanager.core.category.repository.CategoryRepository;
 import com.prodmanager.core.exception.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;
 import java.util.List;
@@ -76,11 +78,10 @@ public class CategoryService {
     }
 
     // Get all categories
-    public List<CategoryResponseDto> getAllCategories() {
-        return categoryRepository.findAll()
-                .stream()
-                .map(category -> modelMapper.map(category, CategoryResponseDto.class))
-                .collect(Collectors.toList());
+    public Page<CategoryResponseDto> getAllCategories(Pageable pageable) {
+        Page<CategoryEntity> categories = categoryRepository.findAll(pageable);
+        return categories.map(category -> modelMapper.map(category, CategoryResponseDto.class));
+
     }
 
     // Get a category by ID

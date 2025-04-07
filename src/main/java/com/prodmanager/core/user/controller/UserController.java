@@ -7,10 +7,10 @@ import com.prodmanager.core.user.dto.UserSignupResponseDto;
 import com.prodmanager.core.user.entity.UserEntity;
 import com.prodmanager.core.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/users")
@@ -35,8 +35,13 @@ public class UserController {
 
     // READ - Get all users
     @GetMapping
-    public ResponseEntity<List<UserSignupResponseDto>> getAllUsers() {
-        List<UserSignupResponseDto> users = userService.getAllUsers();
+    public ResponseEntity<Page<UserSignupResponseDto>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<UserSignupResponseDto> users = userService.getAllUsers(
+                PageRequest.of(page, size)
+        );
         return ResponseEntity.ok(users);
     }
 

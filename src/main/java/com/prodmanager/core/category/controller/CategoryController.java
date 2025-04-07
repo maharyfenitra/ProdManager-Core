@@ -4,6 +4,8 @@ import com.prodmanager.core.category.dto.CategoryRequestDto;
 import com.prodmanager.core.category.dto.CategoryResponseDto;
 import com.prodmanager.core.category.entity.CategoryEntity;
 import com.prodmanager.core.category.service.CategoryService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,8 +29,14 @@ public class CategoryController {
 
     // Get all categories
     @GetMapping
-    public ResponseEntity<List<CategoryResponseDto>> getAllCategories() {
-        return ResponseEntity.ok(categoryService.getAllCategories());
+    public ResponseEntity<Page<CategoryResponseDto>> getAllCategories(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+
+        return ResponseEntity.ok(categoryService.getAllCategories(
+                PageRequest.of(page, size)
+        ));
     }
 
     // Get a category by ID

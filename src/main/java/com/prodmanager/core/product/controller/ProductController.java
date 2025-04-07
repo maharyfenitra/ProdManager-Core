@@ -1,8 +1,11 @@
 package com.prodmanager.core.product.controller;
 
+import com.prodmanager.core.product.dto.ProductResponseDto;
 import com.prodmanager.core.product.entity.ProductEntity;
 import com.prodmanager.core.product.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +25,11 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<ProductEntity> getAllProducts() {
-
-        return productService.getAllProducts();
+    public Page<ProductResponseDto> getAllProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return productService.getAllProducts(PageRequest.of(page, size));
     }
 
     @GetMapping("/{id}")
