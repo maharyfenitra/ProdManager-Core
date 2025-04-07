@@ -1,5 +1,7 @@
 package com.prodmanager.core.user.controller;
 
+import com.prodmanager.core.user.dto.UserRequestDto;
+import com.prodmanager.core.user.dto.UserResponseDto;
 import com.prodmanager.core.user.dto.UserSignupRequestDto;
 import com.prodmanager.core.user.dto.UserSignupResponseDto;
 import com.prodmanager.core.user.entity.UserEntity;
@@ -19,8 +21,8 @@ public class UserController {
 
     // CREATE
     @PostMapping
-    public ResponseEntity<UserSignupResponseDto> registerUser(@RequestBody UserSignupRequestDto userDto) {
-        UserSignupResponseDto createdUser = userService.registerUser(userDto);
+    public ResponseEntity<UserResponseDto> registerUser(@RequestBody UserRequestDto userDto) {
+        UserResponseDto createdUser = userService.saveUser(userDto);
         return ResponseEntity.ok(createdUser);
     }
 

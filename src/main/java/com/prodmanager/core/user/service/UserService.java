@@ -2,6 +2,8 @@ package com.prodmanager.core.user.service;
 
 import com.prodmanager.core.exception.ConflictException;
 import com.prodmanager.core.exception.EntityNotFoundException;
+import com.prodmanager.core.user.dto.UserRequestDto;
+import com.prodmanager.core.user.dto.UserResponseDto;
 import com.prodmanager.core.user.dto.UserSignupRequestDto;
 import com.prodmanager.core.user.dto.UserSignupResponseDto;
 import com.prodmanager.core.user.entity.UserEntity;
@@ -24,19 +26,18 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public void saveUser(UserSignupRequestDto userDto) {
-        // Fetch the existing user
-        Optional<UserEntity> existingUserOpt = userRepository.findByUserName(userDto.getUserName());
-        if (existingUserOpt.isPresent()) {
-            throw new ConflictException("User already exist");
-        }
-        // Encode the password
-        String encodedPassword = passwordEncoder.encode(userDto.getPassword());
-        // Convert UserDTO to UserEntity using ModelMapper
-        UserEntity userEntity = modelMapper.map(userDto, UserEntity.class);
-        userEntity.setPassword(encodedPassword);
-        System.out.println(userEntity.getUserName());
-        UserEntity userDetails = userRepository.save(userEntity);
+    public UserResponseDto saveUser(UserRequestDto dto) {
+        UserEntity user = UserEntity.builder()
+                .userName(dto.getUserName())
+                .firstName(dto.getFirstName())
+                .lastName(dto.getLastName())
+                .role(dto.getRole())
+                .email(dto.getEmail())
+                .password(passwordEncoder.encode(dto.getPassword()))  // Hachage du mot de passe
+                .phoneNumber(dto.getPhoneNumber())
+                .build();
+
+        return modelMapper.map(user, UserResponseDto.class);
     }
 
     public UserSignupResponseDto registerUser(UserSignupRequestDto dto) {
@@ -44,6 +45,7 @@ public class UserService {
                 .userName(dto.getUserName())
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
+                .role(0)
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))  // Hachage du mot de passe
                 .phoneNumber(dto.getPhoneNumber())
